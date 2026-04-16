@@ -1,7 +1,7 @@
 import java.util.HashSet;
 import java.util.List;
 
-public class Employee extends ObjectPlus {
+public class Employee {
 
     private final String name;
     private final String surname;
@@ -23,7 +23,7 @@ public class Employee extends ObjectPlus {
 
     public void dropPortfolio(Portfolio portfolio) {
         portfolios.remove(portfolio);
-        if (!portfolio.isDropped()) {
+        if (!portfolio.getProperties().isEmpty()) {
             portfolio.drop();
         }
     }

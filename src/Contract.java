@@ -1,12 +1,12 @@
 import java.time.LocalDate;
 
-public class Contract extends ObjectPlus {
+public class Contract {
 
     private final LocalDate beginDate;
     private final LocalDate endDate;
     private final double paidAmount;
-    private final Property property;
-    private final Owner owner;
+    private Property property;
+    private Owner owner;
 
     public Contract(LocalDate beginDate, LocalDate endDate, double paidAmount, Property property, Owner owner) {
         super();
@@ -25,6 +25,17 @@ public class Contract extends ObjectPlus {
         this.owner = owner;
         property.addContract(this);
         owner.addContract(this);
+    }
+
+    public void drop() {
+        if (property != null && property.getContracts().contains(this)) {
+            property.dropContract(this);
+        }
+        if (owner != null && owner.getContracts().contains(this)) {
+            owner.dropContract(this);
+        }
+        property = null;
+        owner = null;
     }
 
     public Property getProperty() {

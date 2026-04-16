@@ -3,7 +3,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class Owner extends ObjectPlus {
+public class Owner {
 
     private final String name;
     private final String surname;
@@ -27,17 +27,13 @@ public class Owner extends ObjectPlus {
         return contracts.stream().toList();
     }
 
-    public void dropProperty(Property property) {
-        contracts.removeIf(c -> c.getProperty() == property);
-        if (property.getContracts().stream().anyMatch(c -> c.getOwner() == this)) {
-            property.dropOwner(this);
-        }
+    public void dropContract(Contract contract) {
+        contracts.removeIf(c -> c == contract);
+        contract.drop();
     }
 
     public void drop() {
-        Set<Property> properties = contracts.stream().map(Contract::getProperty).collect(Collectors.toSet());
-        properties.forEach(p -> p.dropOwner(this));
-        contracts.clear();
+        contracts.forEach(Contract::drop);
     }
 
     @Override

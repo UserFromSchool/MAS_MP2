@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class Property extends ObjectPlus {
+public class Property {
 
     private final String name;
     private final double area;
@@ -13,23 +13,22 @@ public class Property extends ObjectPlus {
     private final HashSet<Portfolio> portfolios;
     private final HashSet<Contract> contracts;
 
-    public static class Report extends ObjectPlus {
+    public class Report {
 
         private final String description;
         private final double evaluatedPrice;
         private final LocalDate createdAt;
-        private final Property property;
 
-        private Report(String description, double evaluatedPrice, LocalDate createdAt, Property property) {
+        private Report(String description, double evaluatedPrice, LocalDate createdAt) {
             super();
             this.description = description;
             this.evaluatedPrice = evaluatedPrice;
             this.createdAt = createdAt;
-            this.property = property;
+            Property.this.reports.add(this);
         }
 
         public Property getProperty() {
-            return property;
+            return Property.this;
         }
 
         @Override
@@ -59,7 +58,7 @@ public class Property extends ObjectPlus {
     }
 
     public void addReport(String description, double evaluatedPrice) {
-        this.reports.add(new Report(description, evaluatedPrice, LocalDate.now(), this));
+        this.reports.add(new Report(description, evaluatedPrice, LocalDate.now()));
     }
 
     public void addContract(Contract contract) {
@@ -81,11 +80,9 @@ public class Property extends ObjectPlus {
         return contracts.stream().toList();
     }
 
-    public void dropOwner(Owner owner) {
-        contracts.removeIf(c -> c.getOwner() == owner);
-        if (owner.getContracts().stream().anyMatch(c -> c.getProperty() == this)) {
-            owner.dropProperty(this);
-        }
+    public void dropContract(Contract contract) {
+        contracts.removeIf(c -> c == contract);
+        contract.drop();
     }
 
     public void dropPortfolio(Portfolio portfolio) {
@@ -96,8 +93,7 @@ public class Property extends ObjectPlus {
     }
 
     public void drop() {
-        Set<Owner> owners = contracts.stream().map(Contract::getOwner).collect(Collectors.toSet());
-        owners.forEach(p -> p.dropProperty(this));
+        contracts.forEach(Contract::drop);
         portfolios.forEach(p -> p.dropProperty(this));
         reports.clear();
     }

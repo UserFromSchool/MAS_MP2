@@ -2,12 +2,12 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class Portfolio extends ObjectPlus {
+public class Portfolio {
 
     private final String name;
     private final String description;
     private final HashMap<String, Property> properties;
-    private final Employee employee;
+    private Employee employee;
 
     public Portfolio(String name, String description, Employee employee) {
         super();
@@ -41,10 +41,7 @@ public class Portfolio extends ObjectPlus {
         if (employee.getPortfolios().contains(this)) {
             employee.dropPortfolio(this);
         }
-    }
-
-    public boolean isDropped() {
-        return properties.isEmpty();
+        employee = null;
     }
 
     public int getSize() {
