@@ -1,5 +1,5 @@
 import java.time.LocalDate;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -9,9 +9,9 @@ public class Property {
     private final String name;
     private final double area;
     private final String address;
-    private final HashSet<Report> reports;
-    private final HashSet<Portfolio> portfolios;
-    private final HashSet<Contract> contracts;
+    private final ArrayList<Report> reports;
+    private final ArrayList<Portfolio> portfolios;
+    private final ArrayList<Contract> contracts;
 
     public class Report {
 
@@ -45,25 +45,31 @@ public class Property {
         this.name = name;
         this.area = area;
         this.address = address;
-        this.reports = new HashSet<>();
-        this.portfolios = new HashSet<>();
-        this.contracts = new HashSet<>();
+        this.reports = new ArrayList<>();
+        this.portfolios = new ArrayList<>();
+        this.contracts = new ArrayList<>();
     }
 
     public void addToPortfolio(String nameInPortfolio, Portfolio portfolio) {
+        if (this.portfolios.contains(portfolio)) {
+            throw new IllegalArgumentException("This portfolio already contains this property property.");
+        }
         this.portfolios.add(portfolio);
         if (!portfolio.getProperties().containsValue(this)) {
             portfolio.addProperty(nameInPortfolio, this);
         }
     }
 
-    public void addReport(String description, double evaluatedPrice) {
-        this.reports.add(new Report(description, evaluatedPrice, LocalDate.now()));
+    public Report addReport(String description, double evaluatedPrice) {
+        return new Report(description, evaluatedPrice, LocalDate.now());
     }
 
     public void addContract(Contract contract) {
         if (contracts.contains(contract)) {
             throw new IllegalArgumentException("Can't add the same contract to the history or property contracts.");
+        }
+        if (contract.getProperty() != this) {
+            throw new IllegalArgumentException("This contract can't be signed for this owner as it was already signed for other.");
         }
         contracts.add(contract);
     }
@@ -81,11 +87,17 @@ public class Property {
     }
 
     public void dropContract(Contract contract) {
+        if (!contracts.contains(contract)) {
+            throw new IllegalArgumentException("This contract was not signed for this property. Therefore, it can't be deleted from property.");
+        }
         contracts.removeIf(c -> c == contract);
         contract.drop();
     }
 
     public void dropPortfolio(Portfolio portfolio) {
+        if (!portfolios.contains(portfolio)) {
+            throw new IllegalArgumentException("This property was not registered in this portfolio. Therefore, it can't be deleted from property.");
+        }
         portfolios.remove(portfolio);
         if (portfolio.getProperties().containsValue(this)) {
             portfolio.dropProperty(this);
@@ -93,8 +105,8 @@ public class Property {
     }
 
     public void drop() {
-        contracts.forEach(Contract::drop);
-        portfolios.forEach(p -> p.dropProperty(this));
+        contracts.stream().toList().forEach(Contract::drop);
+        portfolios.stream().toList().forEach(p -> p.dropProperty(this));
         reports.clear();
     }
 

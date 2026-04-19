@@ -1,24 +1,24 @@
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class Owner {
 
     private final String name;
     private final String surname;
-    private final HashSet<Contract> contracts;
+    private final ArrayList<Contract> contracts;
 
     public Owner(String name, String surname) {
         super();
         this.name = name;
         this.surname = surname;
-        this.contracts = new HashSet<>();
+        this.contracts = new ArrayList<>();
     }
-
     public void addContract(Contract contract) {
         if (contracts.contains(contract)) {
             throw new IllegalArgumentException("Owner already has signed this contract.");
+        }
+        if (contract.getOwner() != this) {
+            throw new IllegalArgumentException("This contract can't be signed by this owner as it was already signed by other.");
         }
         contracts.add(contract);
     }
@@ -28,12 +28,15 @@ public class Owner {
     }
 
     public void dropContract(Contract contract) {
+        if (!contracts.contains(contract)) {
+            throw new IllegalArgumentException("This contract was not signed by this owner.");
+        }
         contracts.removeIf(c -> c == contract);
         contract.drop();
     }
 
     public void drop() {
-        contracts.forEach(Contract::drop);
+        contracts.stream().toList().forEach(Contract::drop);
     }
 
     @Override

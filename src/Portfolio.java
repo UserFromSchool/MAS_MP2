@@ -19,6 +19,9 @@ public class Portfolio {
     }
 
     public void addProperty(String name, Property property) {
+        if (properties.containsKey(name) || properties.containsValue(property)) {
+            throw new IllegalArgumentException("Such property or name was already registered in this portfolio.");
+        }
         this.properties.put(name, property);
         if (property.getPortfolios().stream().noneMatch(p -> p == this)) {
             property.addToPortfolio(name, this);
@@ -28,7 +31,7 @@ public class Portfolio {
     public void dropProperty(Property property) {
         Optional<String> key = properties.keySet().stream().filter(k -> properties.get(k) == property).findFirst();
         if (key.isEmpty()) {
-            throw new IllegalArgumentException("The portfolio does not contain property under the name of " + key);
+            throw new IllegalArgumentException("The portfolio does not contain such property. Therefore, it can't be deleted.");
         }
         properties.remove(key.get());
         if (property.getPortfolios().contains(this)) {
@@ -38,10 +41,11 @@ public class Portfolio {
 
     public void drop() {
         properties.values().stream().toList().forEach(p -> p.dropPortfolio(this));
-        if (employee.getPortfolios().contains(this)) {
-            employee.dropPortfolio(this);
-        }
+        Employee emp = employee;
         employee = null;
+        if (emp.getPortfolios().contains(this)) {
+            emp.dropPortfolio(this);
+        }
     }
 
     public int getSize() {

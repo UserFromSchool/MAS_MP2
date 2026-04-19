@@ -1,19 +1,23 @@
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Employee {
 
     private final String name;
     private final String surname;
-    private final HashSet<Portfolio> portfolios;
+    private final ArrayList<Portfolio> portfolios;
 
     public Employee(String name, String surname) {
         this.name = name;
         this.surname = surname;
-        this.portfolios = new HashSet<>();
+        this.portfolios = new ArrayList<>();
     }
 
-    public void addPortfolio(Portfolio portfolio) {
+    public void addPortfolio(Portfolio portfolio)
+    {
+        if (portfolios.contains(portfolio)) {
+            throw new IllegalArgumentException("Can't add a portfolio, which already exists.");
+        }
         this.portfolios.add(portfolio);
     }
 
@@ -22,10 +26,17 @@ public class Employee {
     }
 
     public void dropPortfolio(Portfolio portfolio) {
+        if (!portfolios.contains(portfolio)) {
+            throw new IllegalArgumentException("This employee did not create this portfolio.");
+        }
         portfolios.remove(portfolio);
-        if (!portfolio.getProperties().isEmpty()) {
+        if (portfolio.getEmployee() == this) {
             portfolio.drop();
         }
+    }
+
+    public void drop() {
+        portfolios.stream().toList().forEach(Portfolio::drop);
     }
 
     public List<Portfolio> getPortfolios() {
