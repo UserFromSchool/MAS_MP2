@@ -9,13 +9,14 @@ public class Contract {
     private Owner owner;
 
     public Contract(LocalDate beginDate, LocalDate endDate, double paidAmount, Property property, Owner owner) {
-        super();
-
         if (property.getContracts().stream().anyMatch(contract ->
                 contract.beginDate.isBefore(endDate) &&
                         contract.endDate.isAfter(beginDate)
         )) {
             throw new IllegalArgumentException("Can't create a contract for the ownership during a period of an another contract's ownership.");
+        }
+        if (!beginDate.isBefore(endDate)) {
+            throw new IllegalArgumentException("Contract begin date must precede end date.");
         }
 
         this.beginDate = beginDate;

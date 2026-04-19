@@ -18,6 +18,9 @@ public class Employee {
         if (portfolios.contains(portfolio)) {
             throw new IllegalArgumentException("Can't add a portfolio, which already exists.");
         }
+        if (portfolio.getEmployee() != this) {
+            throw new IllegalArgumentException("Can't add portfolio, which is owned by other Employee. Consider using 'Portfolio.setEmployee()' method.");
+        }
         this.portfolios.add(portfolio);
     }
 

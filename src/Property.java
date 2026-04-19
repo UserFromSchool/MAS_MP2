@@ -20,7 +20,6 @@ public class Property {
         private final LocalDate createdAt;
 
         private Report(String description, double evaluatedPrice, LocalDate createdAt) {
-            super();
             this.description = description;
             this.evaluatedPrice = evaluatedPrice;
             this.createdAt = createdAt;
@@ -41,7 +40,6 @@ public class Property {
     }
 
     public Property(String name, double area, String address) {
-        super();
         this.name = name;
         this.area = area;
         this.address = address;
@@ -69,7 +67,7 @@ public class Property {
             throw new IllegalArgumentException("Can't add the same contract to the history or property contracts.");
         }
         if (contract.getProperty() != this) {
-            throw new IllegalArgumentException("This contract can't be signed for this owner as it was already signed for other.");
+            throw new IllegalArgumentException("This contract can't be signed for this property as it was already signed for other.");
         }
         contracts.add(contract);
     }
@@ -102,6 +100,13 @@ public class Property {
         if (portfolio.getProperties().containsValue(this)) {
             portfolio.dropProperty(this);
         }
+    }
+
+    public void dropReport(Report report) {
+        if (!reports.contains(report)) {
+            throw new IllegalArgumentException("Couldn't find such a report for this property.");
+        }
+        this.reports.removeIf(r -> r == report);
     }
 
     public void drop() {

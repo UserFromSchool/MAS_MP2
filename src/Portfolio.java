@@ -10,12 +10,19 @@ public class Portfolio {
     private Employee employee;
 
     public Portfolio(String name, String description, Employee employee) {
-        super();
         this.name = name;
         this.description = description;
         this.properties = new HashMap<>();
         this.employee = employee;
         employee.addPortfolio(this);
+    }
+
+    public void setEmployee(Employee employee) {
+        if (employee == this.employee) return;
+        Employee emp = this.employee;
+        this.employee = employee;
+        emp.dropPortfolio(this);
+        this.employee.addPortfolio(this);
     }
 
     public void addProperty(String name, Property property) {

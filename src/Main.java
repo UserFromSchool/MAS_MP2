@@ -1,18 +1,5 @@
 import java.time.LocalDate;
 
-/// TODO:
-///
-/// 1. How to correctly handle the case of NON-BAG association with an attribute? What should be the multiplicities
-/// 2. Are my portfolio qualified association multiplicities correct?
-/// 3. How to model things like composition, if there is no extent? Cause then there is no such thing as 'deletion' therefore
-///    behaviour on deletion is unhandleble.
-/// 4. Is my `getExtent` method correct approach for allowing the extent access only for the child classes own extents?
-/// 5. Should the remove() be private and is it a correct approach?
-/// 6. Can my inner class for composition be public (Report of Property)?
-/// 7. Check what creation patterns are correct i.e. which class should create which?
-/// 8. Should remove be public?
-/// 9. IMPORTANT: For single reverse bindings remove final field and model that it will be set to null on dropping.
-
 public class Main {
     public static void main (String[] argv) {
 
